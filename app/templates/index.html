@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Fetal MRI Calculator{% endblock %}
+
+{% block content %}
+  <main class="shell app-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Fetal brain MRI biometry</p>
+        <h1>Fetal MRI Calculator</h1>
+        <p class="lede">
+          Deterministic gestational-age-adjusted z-scores, percentiles, structured report text, and concern cards for the current exact-source parameter set.
+        </p>
+        <div class="hero-chips">
+          <span class="hero-chip">{{ implemented_parameter_count }} implemented parameters</span>
+          <span class="hero-chip">{{ implemented_sources | length }} published sources</span>
+          <span class="hero-chip">Automatic refresh</span>
+        </div>
+      </div>
+      <aside class="hero-note">
+        <h2>Built for focused review</h2>
+        <ul class="plain-list">
+          <li>Shows expected 5th-95th percentile ranges, z-scores, and report-ready wording.</li>
+          <li>Flags extrapolated values when the gestational age falls outside a source's validated window.</li>
+          <li>Keeps diagnostic support separate from exported report text so the wording stays conservative.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="workspace">
+      <form id="calculator-form" class="panel form-panel" action="/calculate" method="post">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Input workspace</p>
+            <h2>Measurements</h2>
+            <p>Enter gestational age and any supported numeric measurements. Results update as you type.</p>
+          </div>
+          <div class="stacked-pills">
+            <span class="mini-pill">Numeric-only v1</span>
+            <span class="mini-pill">Browser-free local app</span>
+          </div>
+        </div>
+
+        <section class="support-strip">
+          <div>
+            <strong>Quick case loader</strong>
+            <p>Use these source-bounded examples to test normal and abnormal workflows quickly.</p>
+          </div>
+          <div class="preset-row">
+            {% for preset in case_presets %}
+              <button
+                type="button"
+                class="preset-button preset-{{ preset.tone }}"
+                data-sample-values='{{ preset.form_values | tojson }}'
+                data-preset-title="{{ preset.title }}"
+                title="{{ preset.description }}"
+              >
+                {{ preset.title }}
+              </button>
+            {% endfor %}
+          </div>
+        </section>
+
+        <div class="ga-grid">
+          <label class="field">
+            <span>Gestational age (weeks)</span>
+            <input type="number" min="18" max="40" name="gestational_weeks" value="{{ form_values.get('gestational_weeks', '') }}" inputmode="numeric" placeholder="24">
+            <small>Whole weeks only.</small>
+          </label>
+          <label class="field">
+            <span>Days</span>
+            <input type="number" min="0" max="6" name="gestational_days" value="{{ form_values.get('gestational_days', '0') }}" inputmode="numeric" placeholder="0">
+            <small>Use 0 through 6.</small>
+          </label>
+        </div>
+
+        {% for group_name, fields in field_groups %}
+          <section class="field-group">
+            <div class="field-group-heading" data-field-names='{{ fields | map(attribute="field_name") | list | tojson }}'>
+              <div>
+                <h3>{{ group_name }}</h3>
+                <p>Leave any field blank if you do not have that measurement.</p>
+              </div>
+              <span class="group-progress" aria-live="polite">0/{{ fields | length }}</span>
+            </div>
+            <div class="field-grid">
+              {% for field in fields %}
+                <label class="field">
+                  <span>{{ field.label }}</span>
+                  <input type="number" step="0.01" name="{{ field.field_name }}" value="{{ form_values.get(field.field_name, '') }}" inputmode="decimal" placeholder="mm">
+                  <small>{{ field.help_text }}</small>
+                </label>
+              {% endfor %}
+            </div>
+          </section>
+        {% endfor %}
+
+        <div class="form-actions">
+          <button type="submit">Update interpretation</button>
+          <button type="button" class="secondary" id="clear-form">Clear form</button>
+        </div>
+        <div id="form-status" class="status-line" aria-live="polite">Auto-refresh ready.</div>
+
+        <section class="sources-block">
+          <div class="section-head">
+            <h3>Implemented sources</h3>
+            <span class="pill">{{ implemented_sources | length }} source{{ "" if implemented_sources|length == 1 else "s" }}</span>
+          </div>
+          <div class="source-list">
+            {% for source in implemented_sources %}
+              <article class="source-card">
+                <h4>{{ source.short_label }}</h4>
+                <p>{{ source.title }}</p>
+                {% if source.note %}
+                  <small>{{ source.note }}</small>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="deferred">
+          <h3>Planned next</h3>
+          <ul>
+            {% for item in deferred_parameters %}
+              <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      </form>
+
+      <section id="results-panel" class="panel results-panel">
+        {% include "partials/results.html" %}
+      </section>
+    </section>
+  </main>
+{% endblock %}

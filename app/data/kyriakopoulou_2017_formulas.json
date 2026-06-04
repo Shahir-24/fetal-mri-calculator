@@ -1,0 +1,127 @@
+{
+  "parameters": {
+    "atrial_diameter": {
+      "group": "Ventricular System",
+      "label": "Atrial diameter",
+      "mean_coeffs": [
+        16.6003369575988,
+        -0.747101287972887,
+        0.0132196766715267
+      ],
+      "sd_coeffs": [
+        2.12569968616966,
+        -0.0315023655133491
+      ],
+      "unit": "mm"
+    },
+    "brain_bpd": {
+      "group": "Global Brain / Skull Growth",
+      "label": "Brain biparietal diameter",
+      "mean_coeffs": [
+        -4.10103070034808,
+        2.15796641214556,
+        0.00745288371870462
+      ],
+      "sd_coeffs": [
+        -0.00860905658350885,
+        0.0964247812880832
+      ],
+      "unit": "mm"
+    },
+    "brain_ofd": {
+      "group": "Global Brain / Skull Growth",
+      "label": "Brain fronto-occipital length",
+      "mean_coeffs": [
+        -70.0314528061519,
+        7.35388404172975,
+        -0.0713232019035459
+      ],
+      "sd_coeffs": [
+        1.70886156273044,
+        0.0476950051407897
+      ],
+      "unit": "mm"
+    },
+    "skull_bpd": {
+      "group": "Global Brain / Skull Growth",
+      "label": "Skull biparietal diameter",
+      "mean_coeffs": [
+        -49.8911774130114,
+        5.91791531313345,
+        -0.0552269320569366
+      ],
+      "sd_coeffs": [
+        3.08061696569922,
+        -0.00409764631804949
+      ],
+      "unit": "mm"
+    },
+    "skull_ofd": {
+      "group": "Global Brain / Skull Growth",
+      "label": "Skull occipitofrontal diameter",
+      "mean_coeffs": [
+        -73.3779606807346,
+        8.1347192926378,
+        -0.0859071318267954
+      ],
+      "sd_coeffs": [
+        2.46167202070241,
+        0.0398861924065703
+      ],
+      "unit": "mm"
+    },
+    "tcd": {
+      "group": "Posterior Fossa",
+      "label": "Transverse cerebellar diameter",
+      "mean_coeffs": [
+        -11.4734382575368,
+        1.27358107306175,
+        0.00975811928717771
+      ],
+      "sd_coeffs": [
+        -0.137234091662908,
+        0.058239782764265
+      ],
+      "unit": "mm"
+    },
+    "vermian_height": {
+      "group": "Posterior Fossa",
+      "label": "Vermian height",
+      "mean_coeffs": [
+        -19.6738459053175,
+        1.70362413748618,
+        -0.0160406858650251
+      ],
+      "sd_coeffs": [
+        -0.642983978573238,
+        0.060046327244326
+      ],
+      "unit": "mm"
+    },
+    "vermian_width": {
+      "group": "Posterior Fossa",
+      "label": "Vermian width",
+      "mean_coeffs": [
+        -10.7794551772162,
+        0.908493085558297,
+        -0.00576665571345983
+      ],
+      "sd_coeffs": [
+        -0.372909132540246,
+        0.040820000507973
+      ],
+      "unit": "mm"
+    }
+  },
+  "source": {
+    "note": "Implemented from the downloadable supplementary calculator sheet after extracting exact mean and SD formulas.",
+    "short_label": "Kyriakopoulou 2017",
+    "title": "Normative biometry of the fetal brain using magnetic resonance imaging.",
+    "url": "https://link.springer.com/article/10.1007/s00429-016-1342-6"
+  },
+  "validated_ga_weeks": {
+    "max": 38.86,
+    "min": 21.29
+  }
+}
+

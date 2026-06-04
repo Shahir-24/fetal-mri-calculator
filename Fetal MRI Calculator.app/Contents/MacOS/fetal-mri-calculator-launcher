@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+set -euo pipefail
+
+APP_BUNDLE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+DEFAULT_PROJECT_DIR="/Users/shahir/Documents/TicTacToe/fetal mri calculator"
+PROJECT_DIR="$(cd "$APP_BUNDLE_DIR/.." && pwd)"
+COMMAND_FILE_NAME="Open Fetal MRI Calculator.command"
+
+if [ ! -f "$PROJECT_DIR/$COMMAND_FILE_NAME" ]; then
+  PROJECT_DIR="$DEFAULT_PROJECT_DIR"
+fi
+
+COMMAND_FILE="$PROJECT_DIR/$COMMAND_FILE_NAME"
+
+show_dialog() {
+  local message="$1"
+  /usr/bin/osascript - "$message" <<'APPLESCRIPT'
+on run argv
+  display dialog (item 1 of argv) buttons {"OK"} default button "OK"
+end run
+APPLESCRIPT
+}
+
+if [ ! -f "$COMMAND_FILE" ]; then
+  show_dialog "I could not find \"$COMMAND_FILE_NAME\" next to the app or at the default project path."
+  exit 1
+fi
+
+/usr/bin/open "$COMMAND_FILE"

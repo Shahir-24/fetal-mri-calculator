@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Fetal MRI Calculator{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-shell">
+        <a class="brand" href="/">Fetal MRI Calculator</a>
+        <div class="topbar-chips">
+          <span class="meta-chip">Local-first</span>
+          <span class="meta-chip">Source-backed v1</span>
+        </div>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+    <script src="{{ url_for('static', path='app.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,256 @@
+{% if errors %}
+  <div class="notice notice-error">
+    <h2>Needs attention</h2>
+    <ul>
+      {% for error in errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% if bundle %}
+  <section class="review-banner review-banner-{{ bundle.review_status.tone }}">
+    <div>
+      <p class="eyebrow">Radiologist workflow</p>
+      <h2>{{ bundle.review_status.title }}</h2>
+      <p>{{ bundle.review_status.body }}</p>
+    </div>
+  </section>
+
+  <div class="results-header">
+    <div>
+      <p class="eyebrow">Interpretation</p>
+      <h2>{{ bundle.gestational_age_label }}</h2>
+      <p class="caption">Reference ranges below show the expected 5th-95th percentile interval for the approved source set.</p>
+    </div>
+    <div class="pill">{{ bundle.results | length }} measurement{{ "" if bundle.results|length == 1 else "s" }}</div>
+  </div>
+
+  <nav class="result-nav" aria-label="Result sections">
+    <a href="#summary-section">Summary</a>
+    <a href="#workflow-section">Workflow</a>
+    <a href="#measurement-section">Measurements</a>
+    <a href="#report-section">Report</a>
+    <a href="#evidence-section">Evidence</a>
+  </nav>
+
+  <div class="metric-grid">
+    {% for metric in bundle.overview_metrics %}
+      <article class="metric-card metric-{{ metric.tone }}">
+        <span class="metric-label">{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+        <small>{{ metric.caption }}</small>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if bundle.warnings %}
+    <div class="notice">
+      {% for warning in bundle.warnings %}
+        <p>{{ warning }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <section class="report-block" id="summary-section">
+    <div class="section-head">
+      <h3>Key takeaways</h3>
+      <p>Quick visual read before the detailed table.</p>
+    </div>
+    <div class="insight-list">
+      {% for highlight in bundle.highlights %}
+        <article class="insight insight-{{ highlight.tone }}">
+          <h4>{{ highlight.title }}</h4>
+          <p>{{ highlight.body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="workflow-section" id="workflow-section">
+    <div class="section-head">
+      <h3>Assessment Workflow</h3>
+      <p>Panels below focus on what radiologists commonly still need to confirm, discuss, or arrange. Each panel is linked to retrieved guidance sources.</p>
+    </div>
+    <div class="workflow-grid">
+      {% for panel in bundle.advisory_panels %}
+        <details class="workflow-card workflow-{{ panel.tone }}" open>
+          <summary>
+            <span>{{ panel.title }}</span>
+            <small>{{ panel.items | length }} item{{ "" if panel.items|length == 1 else "s" }}</small>
+          </summary>
+          <p>{{ panel.summary }}</p>
+          <div class="workflow-items">
+            {% for item in panel.items %}
+              <div class="workflow-item workflow-item-{{ item.tone }}">
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.body }}</small>
+              </div>
+            {% endfor %}
+          </div>
+          <p class="caption">
+            Sources:
+            {% for citation in panel.citations %}
+              <a href="{{ citation.url }}" target="_blank" rel="noreferrer">{{ citation.short_label }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        </details>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="result-table" id="measurement-section">
+    <div class="result-row result-head">
+      <span>Measurement</span>
+      <span>Observed</span>
+      <span>Expected 5th-95th</span>
+      <span>Z / percentile</span>
+      <span>Interpretation</span>
+    </div>
+    {% for result in bundle.results %}
+      <div class="result-row">
+        <div class="result-label">
+          <strong>{{ result.display_label }}</strong>
+          <small>{{ result.group }} | {{ result.citation.short_label }}</small>
+          <small>Validated GA: {{ result.validated_range.label }}</small>
+        </div>
+        <span>{{ "%.2f"|format(result.value) }} {{ result.unit }}</span>
+        <span>{{ "%.2f"|format(result.expected_low) }}-{{ "%.2f"|format(result.expected_high) }} {{ result.unit }}</span>
+        <div class="result-stat">
+          <strong class="{{ 'flag-low' if result.tone == 'low' else 'flag-high' if result.tone == 'high' else 'flag-borderline' if result.tone == 'borderline' else '' }}">
+            {{ "%+.2f"|format(result.z_score) }}
+          </strong>
+          <small>{{ "%.1f"|format(result.percentile) }}th percentile</small>
+        </div>
+        <div class="result-status">
+          <span class="status-tag status-{{ result.tone }}">{{ result.interpretation }}</span>
+          {% if result.extrapolated %}
+            <small class="inline-note">Extrapolated</small>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <section class="report-block" id="report-section">
+    <div class="section-head">
+      <h3>Structured Report Text</h3>
+      <button type="button" class="secondary" data-copy-target="report-text">Copy report text</button>
+    </div>
+    <textarea id="report-text" readonly>{{ bundle.report_text }}</textarea>
+    <p class="caption">The exported text stays conservative and omits threshold-based concern suggestions.</p>
+  </section>
+
+  <section class="report-block">
+    <div class="section-head">
+      <h3>Parent Counseling Note</h3>
+      <button type="button" class="secondary" data-copy-target="counseling-note">Copy counseling note</button>
+    </div>
+    <textarea id="counseling-note" readonly>{{ bundle.counseling_note_text }}</textarea>
+    <p class="caption">Parent-facing discussion aid only. Adapt to the full MRI, clinical context, and specialist counseling plan.</p>
+  </section>
+
+  <section class="workflow-section" id="evidence-section">
+    <div class="section-head">
+      <h3>Retrieved Evidence</h3>
+      <p>Local evidence matches selected from the app's curated guidance set for the entered pattern.</p>
+    </div>
+    {% if bundle.evidence_hits %}
+      <div class="evidence-grid">
+        {% for hit in bundle.evidence_hits %}
+          <article class="evidence-card">
+            <div class="evidence-card-header">
+              <h4>{{ hit.title }}</h4>
+              <span class="mini-pill">{{ hit.source_label }}</span>
+            </div>
+            <p>{{ hit.summary }}</p>
+            {% if hit.matched_terms %}
+              <div class="term-row">
+                {% for term in hit.matched_terms %}
+                  <span>{{ term }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <p class="caption">
+              <a href="{{ hit.url }}" target="_blank" rel="noreferrer">Open source</a>
+            </p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="notice">
+        <p>No local evidence matches were retrieved for the current inputs.</p>
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="differentials">
+    <div class="section-head">
+      <h3>Concern Cards</h3>
+      <p>Advisory prompts only. These are not included in the exported report text.</p>
+    </div>
+    {% if bundle.differential_cards %}
+      {% for card in bundle.differential_cards %}
+        <details class="card" open>
+          <summary>
+            <span>{{ card.title }}</span>
+            <small>{{ card.diagnoses | length }} considerations</small>
+          </summary>
+          <p><strong>Trigger:</strong> {{ card.trigger_summary }}</p>
+          <p>{{ card.clinical_summary }}</p>
+          <div class="card-columns">
+            <div>
+              <h5>Consider</h5>
+              <ul>
+                {% for diagnosis in card.diagnoses %}
+                  <li>{{ diagnosis }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div>
+              <h5>Likelihood Ranges</h5>
+              <ul>
+                {% for item in card.likelihood_ranges %}
+                  <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div>
+              <h5>Next steps</h5>
+              <ul>
+                {% for step in card.next_steps %}
+                  <li>{{ step }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <div class="limitations">
+            <h5>Limitations</h5>
+            <ul>
+              {% for item in card.limitations %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <p class="caption">
+            Sources:
+            {% for citation in card.citations %}
+              <a href="{{ citation.url }}" target="_blank" rel="noreferrer">{{ citation.short_label }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        </details>
+      {% endfor %}
+    {% else %}
+      <div class="notice">
+        <p>No threshold-based concern cards were triggered by the currently implemented parameter set.</p>
+      </div>
+    {% endif %}
+  </section>
+{% else %}
+  <div class="empty-state">
+    <p class="eyebrow">Ready for review</p>
+    <h2>Enter gestational age and one or more measurements</h2>
+    <p>Use the built-in 24-week reference case if you want a quick accuracy check before entering live values.</p>
+  </div>
+{% endif %}

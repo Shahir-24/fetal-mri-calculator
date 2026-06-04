@@ -1,0 +1,45 @@
+{
+  "parameter": {
+    "group": "Midline Structures",
+    "label": "Corpus callosum length",
+    "mean_coeffs": [
+      -40.37,
+      4.017,
+      -0.048
+    ],
+    "parameter_id": "corpus_callosum_length",
+    "sigma_points": [
+      {"ga": 18, "sigma": 3.647959},
+      {"ga": 19, "sigma": 3.571429},
+      {"ga": 20, "sigma": 3.494898},
+      {"ga": 21, "sigma": 3.469388},
+      {"ga": 22, "sigma": 3.418367},
+      {"ga": 23, "sigma": 3.418367},
+      {"ga": 24, "sigma": 3.392857},
+      {"ga": 25, "sigma": 3.392857},
+      {"ga": 26, "sigma": 3.392857},
+      {"ga": 27, "sigma": 3.392857},
+      {"ga": 28, "sigma": 3.392857},
+      {"ga": 29, "sigma": 3.392857},
+      {"ga": 30, "sigma": 3.392857},
+      {"ga": 31, "sigma": 3.392857},
+      {"ga": 32, "sigma": 3.367347},
+      {"ga": 33, "sigma": 3.367347},
+      {"ga": 34, "sigma": 3.392857},
+      {"ga": 35, "sigma": 3.392857},
+      {"ga": 36, "sigma": 3.418367},
+      {"ga": 37, "sigma": 3.443878}
+    ],
+    "unit": "mm"
+  },
+  "source": {
+    "note": "Mean is the published quadratic fit; sigma is derived from the published 95% individual prediction interval table.",
+    "short_label": "Harreld 2011",
+    "title": "Corpus callosum length by gestational age as evaluated by fetal MR imaging.",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8013091/"
+  },
+  "validated_ga_weeks": {
+    "max": 37.7,
+    "min": 18.5
+  }
+}

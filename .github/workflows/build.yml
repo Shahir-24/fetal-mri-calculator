@@ -59,11 +59,45 @@ jobs:
           if [ "$src" != "$dest" ]; then
             mv "$src" "$dest"
           fi
+      - name: Package release artifact
+        shell: bash
+        env:
+          DIST_FILENAME: ${{ matrix.filename }}
+          MATRIX_OS: ${{ matrix.os }}
+        run: |
+          python - <<'PY'
+          import os, stat, zipfile
+          from pathlib import Path
+
+          dist = Path('dist')
+          name = os.environ['DIST_FILENAME']
+          platform = os.environ['MATRIX_OS']
+          exe_path = dist / name
+
+          if platform == 'macos-latest':
+              wrapper = dist / f'{name}.command'
+              wrapper.write_text('#!/bin/bash\ncd "$(dirname "$0")"\n./' + name + '\n', encoding='utf-8')
+              wrapper.chmod(wrapper.stat().st_mode | stat.S_IEXEC)
+              zip_name = dist / 'fetal-mri-calculator-macos.zip'
+              with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+                  z.write(exe_path, exe_path.name)
+                  z.write(wrapper, wrapper.name)
+          elif platform == 'ubuntu-latest':
+              zip_name = dist / 'fetal-mri-calculator-linux.zip'
+              with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+                  z.write(exe_path, exe_path.name)
+          else:
+              zip_name = dist / 'fetal-mri-calculator-windows.zip'
+              with zipfile.ZipFile(zip_name, 'w', compression=zipfile.ZIP_DEFLATED) as z:
+                  z.write(exe_path, exe_path.name)
+
+          print('Packaged', zip_name)
+          PY
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}
-          path: dist/${{ matrix.filename }}
+          path: dist/*.zip
 
   release:
     needs: build

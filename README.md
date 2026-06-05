@@ -10,11 +10,11 @@ Local-first fetal brain MRI biometry calculator built with FastAPI and Jinja.
 
 Go to **[Releases](https://github.com/Shahir-24/fetal-mri-calculator/releases)** and download:
 
-- 🍎 **macOS**: `fetal-mri-calculator-macos` → Double-click to run
-- 🪟 **Windows**: `fetal-mri-calculator.exe` → Double-click to run  
-- 🐧 **Linux**: `fetal-mri-calculator-linux` → Double-click to run
+- 🍎 **macOS**: `fetal-mri-calculator-macos.zip` → unzip and double-click `fetal-mri-calculator-macos.command`
+- 🪟 **Windows**: `fetal-mri-calculator-windows.zip` → unzip and double-click `fetal-mri-calculator.exe`
+- 🐧 **Linux**: `fetal-mri-calculator-linux.zip` → unzip and run `./fetal-mri-calculator-linux`
 
-### 2️⃣ Click once and you're done! 🎉
+### 2️⃣ Open the app and you're done! 🎉
 
 The app opens automatically in your browser at `http://127.0.0.1:8001`
 

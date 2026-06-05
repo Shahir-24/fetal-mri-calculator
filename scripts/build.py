@@ -14,7 +14,7 @@ def main() -> int:
         print("Unable to resolve repository root.")
         return 1
 
-    sep = ";" if os.name == "nt" else ":"
+    sep = ";" if sys.platform.startswith("win") else ":"
     data_paths = [
         f"{root / 'app' / 'templates'}{sep}app/templates",
         f"{root / 'app' / 'static'}{sep}app/static",

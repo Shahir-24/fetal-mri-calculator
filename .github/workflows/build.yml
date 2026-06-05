@@ -32,12 +32,12 @@ jobs:
         run: |
           python - <<'PY'
           import os, subprocess, sys
-          sep = ';' if os.name == 'nt' else ':'
+          sep = ';' if sys.platform.startswith('win') else ':'
           data_args = [
               f"--add-data=app/templates{sep}app/templates",
               f"--add-data=app/static{sep}app/static",
           ]
-          console_flag = ['--console'] if os.name == 'nt' else []
+          console_flag = ['--console'] if sys.platform.startswith('win') else []
           name = 'fetal-mri-calculator'
           args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', name, *data_args, *console_flag, 'app/main.py']
           subprocess.run(args, check=True)

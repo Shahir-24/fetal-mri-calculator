@@ -29,6 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pyinstaller fastapi uvicorn jinja2 scipy python-multipart
       - name: Build portable executable
+        shell: bash
         run: |
           python - <<'PY'
           import os, subprocess, sys

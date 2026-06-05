@@ -34,7 +34,7 @@ This version focuses completely on the fetal MRI workflow:
 
 ## 🔧 Alternative Ways to Run (For Developers)
 
-### Run from source
+### Run from source (requires you to download sorce code from latest relase)
 
 ```bash
 python3 -m venv .venv

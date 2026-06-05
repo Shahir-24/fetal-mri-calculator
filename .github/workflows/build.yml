@@ -66,7 +66,7 @@ jobs:
           MATRIX_OS: ${{ matrix.os }}
         run: |
           python - <<'PY'
-          import os, stat, time, zipfile
+          import os, stat, time, zipfile, textwrap
           from pathlib import Path
 
           def add_file(zf, path, arcname):
@@ -84,50 +84,51 @@ jobs:
           exe_path = dist / name
 
           if platform == 'macos-latest':
-              app_bundle = dist / 'fetal-mri-calculator-macos.app'
+              app_bundle = dist / 'Fetal MRI Calculator.app'
               macos_dir = app_bundle / 'Contents' / 'MacOS'
               resources_dir = app_bundle / 'Contents' / 'Resources'
               macos_dir.mkdir(parents=True, exist_ok=True)
               resources_dir.mkdir(parents=True, exist_ok=True)
 
               info_plist = app_bundle / 'Contents' / 'Info.plist'
-              info_plist.write_text('''<?xml version="1.0" encoding="UTF-8"?>
-<plist version="1.0">
-<dict>
-  <key>CFBundleName</key>
-  <string>Fetal MRI Calculator</string>
-  <key>CFBundleDisplayName</key>
-  <string>Fetal MRI Calculator</string>
-  <key>CFBundleIdentifier</key>
-  <string>com.shahir24.fetalmricalculator</string>
-  <key>CFBundleVersion</key>
-  <string>1.0</string>
-  <key>CFBundleShortVersionString</key>
-  <string>1.0</string>
-  <key>CFBundleExecutable</key>
-  <string>{name}</string>
-  <key>CFBundlePackageType</key>
-  <string>APPL</string>
-  <key>CFBundleInfoDictionaryVersion</key>
-  <string>6.0</string>
-  <key>LSMinimumSystemVersion</key>
-  <string>10.14</string>
-</dict>
-</plist>
-'''.format(name=name), encoding='utf-8')
-
+              info_plist.write_text(textwrap.dedent('''\
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <plist version="1.0">
+                  <dict>
+                    <key>CFBundleName</key>
+                    <string>Fetal MRI Calculator</string>
+                    <key>CFBundleDisplayName</key>
+                    <string>Fetal MRI Calculator</string>
+                    <key>CFBundleIdentifier</key>
+                    <string>com.shahir24.fetalmricalculator</string>
+                    <key>CFBundleVersion</key>
+                    <string>1.0</string>
+                    <key>CFBundleShortVersionString</key>
+                    <string>1.0</string>
+                    <key>CFBundleExecutable</key>
+                    <string>fetal-mri-calculator</string>
+                    <key>CFBundlePackageType</key>
+                    <string>APPL</string>
+                    <key>CFBundleInfoDictionaryVersion</key>
+                    <string>6.0</string>
+                    <key>LSMinimumSystemVersion</key>
+                    <string>10.14</string>
+                  </dict>
+                  </plist>
+              '''), encoding='utf-8')
               pkginfo = app_bundle / 'Contents' / 'PkgInfo'
               pkginfo.write_text('APPL????', encoding='utf-8')
 
-              app_exe = macos_dir / name
+              bundle_exe_name = 'fetal-mri-calculator'
+              app_exe = macos_dir / bundle_exe_name
               app_exe.write_bytes(exe_path.read_bytes())
               app_exe.chmod(exe_path.stat().st_mode | stat.S_IEXEC)
 
               zip_name = dist / 'fetal-mri-calculator-macos.zip'
               with zipfile.ZipFile(zip_name, 'w') as z:
                   for path in sorted(app_bundle.rglob('*')):
-                      add_file(z, path, path.relative_to(dist))
-
+                      if path.is_file():
+                          add_file(z, path, path.relative_to(dist))
           elif platform == 'ubuntu-latest':
               zip_name = dist / 'fetal-mri-calculator-linux.zip'
               with zipfile.ZipFile(zip_name, 'w') as z:
@@ -149,6 +150,15 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    strategy:
+      matrix:
+        asset:
+          - name: fetal-mri-calculator-linux.zip
+            path: dist/ubuntu-latest/fetal-mri-calculator-linux.zip
+          - name: fetal-mri-calculator-macos.zip
+            path: dist/macos-latest/fetal-mri-calculator-macos.zip
+          - name: fetal-mri-calculator-windows.zip
+            path: dist/windows-latest/fetal-mri-calculator-windows.zip
     steps:
       - uses: actions/checkout@v4
       - name: Download build artifacts
@@ -168,19 +178,10 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload release assets
-        shell: bash
-        run: |
-          cd dist
-          release_id="${{ steps.create_release.outputs.id }}"
-          for file in $(find . -type f | sort); do
-            file_path="$file"
-            file_name=$(basename "$file_path")
-            echo "Uploading $file_path as $file_name"
-            curl -S --fail -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @"$file_path" \
-              "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?name=${file_name}"
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ matrix.asset.path }}
+          asset_name: ${{ matrix.asset.name }}
+          asset_content_type: application/zip

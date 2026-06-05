@@ -44,6 +44,7 @@ jobs:
           subprocess.run(args, check=True)
           PY
       - name: Rename executable for release
+        shell: bash
         run: |
           cd dist
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
@@ -51,7 +52,6 @@ jobs:
           else
             mv "fetal-mri-calculator" "${{ matrix.filename }}"
           fi
-        shell: bash
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:

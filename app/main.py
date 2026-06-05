@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -11,7 +12,12 @@ from app.services.calculator import build_case_presets, build_reference_case, ca
 from app.services.registry import grouped_input_fields, implemented_sources, load_registry
 
 
-BASE_DIR = Path(__file__).resolve().parent
+def _app_base_path() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS)
+    return Path(__file__).resolve().parent
+
+BASE_DIR = _app_base_path()
 
 app = FastAPI(title="Fetal MRI Calculator")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
@@ -116,3 +122,23 @@ async def calculate(request: Request) -> HTMLResponse:
         "partials/results.html",
         _build_context(request, form_values=form_values, errors=errors, bundle=bundle),
     )
+
+
+def main(host: str = "127.0.0.1", port: int = 8001, open_browser: bool = True) -> None:
+    import threading
+    import time
+    import uvicorn
+    import webbrowser
+
+    if open_browser:
+        def _open() -> None:
+            time.sleep(1.0)
+            webbrowser.open(f"http://{host}:{port}")
+
+        threading.Thread(target=_open, daemon=True).start()
+
+    uvicorn.run(app, host=host, port=port)
+
+
+if __name__ == "__main__":
+    main()

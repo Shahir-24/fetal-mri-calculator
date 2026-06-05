@@ -10,17 +10,48 @@ This version focuses completely on the fetal MRI workflow:
 
 ## Run
 
+### Run from source
+
 ```bash
 python3 -m venv .venv
+.venv/bin/pip install -U pip
 .venv/bin/pip install fastapi uvicorn jinja2 scipy python-multipart pytest httpx
-.venv/bin/uvicorn app.main:app --reload
+.venv/bin/python -m app
 ```
 
 Then open [http://127.0.0.1:8001](http://127.0.0.1:8001).
 
-On macOS you can also double-click:
-- [Open Fetal MRI Calculator.command](/Users/shahir/Documents/TicTacToe/fetal%20mri%20calculator/Open%20Fetal%20MRI%20Calculator.command)
-- or [Fetal MRI Calculator.app](/Users/shahir/Documents/TicTacToe/fetal%20mri%20calculator/Fetal%20MRI%20Calculator.app)
+### Build a cross-platform executable locally
+
+Use the included build helper to create a single-file app for your platform:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -U pip
+.venv/bin/pip install pyinstaller
+.venv/bin/python scripts/build.py
+```
+
+The built executable will be placed in `dist/`.
+
+### Download a packaged app from GitHub
+
+This repository can build platform-specific release artifacts on GitHub using `PyInstaller`.
+After a tagged release, GitHub can publish one artifact per platform:
+
+- macOS: `Fetal MRI Calculator`
+- Windows: `Fetal MRI Calculator.exe`
+- Linux: `Fetal MRI Calculator`
+
+On Windows, double-click the `.exe` file.
+On macOS or Linux, run the downloaded file after making it executable:
+
+```bash
+chmod +x "Fetal MRI Calculator"
+./"Fetal MRI Calculator"
+```
+
+The app will open your browser automatically at `http://127.0.0.1:8001`.
 
 ## Tests
 

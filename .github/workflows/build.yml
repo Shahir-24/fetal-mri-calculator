@@ -1,0 +1,42 @@
+name: Build portable executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.12]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller fastapi uvicorn jinja2 scipy python-multipart
+      - name: Build portable executable
+        run: |
+          python - <<'PY'
+          import os, subprocess, sys
+          sep = ';' if os.name == 'nt' else ':'
+          data_args = [
+              f"--add-data=app/templates{sep}app/templates",
+              f"--add-data=app/static{sep}app/static",
+          ]
+          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', 'Fetal MRI Calculator', *data_args, 'app/main.py']
+          subprocess.run(args, check=True)
+          PY
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetal-mri-calculator-${{ matrix.os }}
+          path: dist/

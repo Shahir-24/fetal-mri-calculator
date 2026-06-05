@@ -1,7 +1,63 @@
+# Virtual environment
 .venv/
+venv/
+ENV/
+env/
+
+# Python
 __pycache__/
-.pytest_cache/
 *.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build output
 .logs/
 .run/
+*.spec
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+*.lnk
+
+# Environment
+.env
+.env.local
+
+# Build artifacts
+build/
+dist/
 

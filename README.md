@@ -1,4 +1,4 @@
-# Fetal MRI Calculator
+2# Fetal MRI Calculator
 
 Local-first fetal brain MRI biometry calculator built with FastAPI and Jinja.
 
@@ -57,6 +57,8 @@ python3 -m venv .venv
 ```
 
 The built executable will be placed in `dist/`.
+
+If no launch method works for you go to relases and download the .zip of the source code and unzip the file and double click on Open Fetal MRI Calculator.command, if you are on mac it may say "Apple could not verify “Open Fetal MRI Calculator.command” is free of malware that may harm your Mac or compromise your privacy." I assure you this is a safe software and to bypass this you have to go into your MacBook settings and go to privacy & Security settings and scroll to the bottom and right above "File Vault" press allow anyways. You may have to put in an adminstrator password, or if you are an adminstartor use touch ID to allow opening of the software.
 
 ## Tests
 

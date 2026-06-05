@@ -18,7 +18,7 @@ Go to **[Releases](https://github.com/Shahir-24/fetal-mri-calculator/releases)**
 - `fetal-mri-calculator.exe` is a Windows executable and will not run on macOS or Linux.
 - Use the macOS package on macOS, the Linux package on Linux, and the Windows package on Windows.
 
-### 3️⃣ Open the app and you're done! 🎉
+### 3️⃣ Open the app and you're done
 
 The app opens automatically in your browser at `http://127.0.0.1:8001`
 

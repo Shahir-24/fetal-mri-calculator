@@ -32,7 +32,8 @@ jobs:
               f"--add-data=app/templates{sep}app/templates",
               f"--add-data=app/static{sep}app/static",
           ]
-          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', 'Fetal MRI Calculator', *data_args, 'app/main.py']
+          console_flag = ['--console'] if os.name == 'nt' else []
+          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', 'Fetal MRI Calculator', *data_args, *console_flag, 'app/main.py']
           subprocess.run(args, check=True)
           PY
       - name: Upload build artifacts

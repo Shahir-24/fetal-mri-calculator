@@ -19,6 +19,7 @@ def main() -> int:
         f"{root / 'app' / 'templates'}{sep}app/templates",
         f"{root / 'app' / 'static'}{sep}app/static",
     ]
+    console_flag = ["--console"] if os.name == "nt" else []
     args = [
         python,
         "-m",
@@ -27,6 +28,7 @@ def main() -> int:
         "--name",
         "Fetal MRI Calculator",
         *[f"--add-data={value}" for value in data_paths],
+        *console_flag,
         str(root / "app" / "main.py"),
     ]
 

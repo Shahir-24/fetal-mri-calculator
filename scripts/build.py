@@ -26,7 +26,7 @@ def main() -> int:
         "PyInstaller",
         "--onefile",
         "--name",
-        "Fetal MRI Calculator",
+        "fetal-mri-calculator",
         *[f"--add-data={value}" for value in data_paths],
         *console_flag,
         str(root / "app" / "main.py"),

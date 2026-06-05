@@ -13,11 +13,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            filename: Fetal MRI Calculator-linux
+            filename: fetal-mri-calculator-linux
           - os: windows-latest
-            filename: Fetal MRI Calculator.exe
+            filename: fetal-mri-calculator.exe
           - os: macos-latest
-            filename: Fetal MRI Calculator-macos
+            filename: fetal-mri-calculator-macos
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -38,16 +38,17 @@ jobs:
               f"--add-data=app/static{sep}app/static",
           ]
           console_flag = ['--console'] if os.name == 'nt' else []
-          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', 'Fetal MRI Calculator', *data_args, *console_flag, 'app/main.py']
+          name = 'fetal-mri-calculator'
+          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', name, *data_args, *console_flag, 'app/main.py']
           subprocess.run(args, check=True)
           PY
       - name: Rename executable for release
         run: |
           cd dist
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            mv "Fetal MRI Calculator.exe" "Fetal MRI Calculator.exe"
+            mv "fetal-mri-calculator.exe" "${{ matrix.filename }}"
           else
-            mv "Fetal MRI Calculator" "${{ matrix.filename }}"
+            mv "fetal-mri-calculator" "${{ matrix.filename }}"
           fi
         shell: bash
       - name: Upload build artifact

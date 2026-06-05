@@ -82,9 +82,12 @@ jobs:
           name = os.environ['DIST_FILENAME']
           platform = os.environ['MATRIX_OS']
           exe_path = dist / name
+          platform_dir = dist / platform
+          platform_dir.mkdir(parents=True, exist_ok=True)
+          print('Packaging', platform, 'exe_path=', exe_path, 'exists=', exe_path.exists(), 'dist=', [p.name for p in sorted(dist.iterdir())])
 
           if platform == 'macos-latest':
-              app_bundle = dist / 'Fetal MRI Calculator.app'
+              app_bundle = platform_dir / 'fetal-mri-calculator-macos.app'
               macos_dir = app_bundle / 'Contents' / 'MacOS'
               resources_dir = app_bundle / 'Contents' / 'Resources'
               macos_dir.mkdir(parents=True, exist_ok=True)
@@ -124,7 +127,7 @@ jobs:
               app_exe.write_bytes(exe_path.read_bytes())
               app_exe.chmod(exe_path.stat().st_mode | stat.S_IEXEC)
 
-              zip_name = dist / 'fetal-mri-calculator-macos.zip'
+              zip_name = platform_dir / 'fetal-mri-calculator-macos.zip'
               with zipfile.ZipFile(zip_name, 'w') as z:
                   for path in sorted(app_bundle.rglob('*')):
                       if path.is_file():
@@ -144,7 +147,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}
-          path: dist/*.zip
+          path: dist/${{ matrix.os }}/*.zip
 
   release:
     needs: build

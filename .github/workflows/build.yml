@@ -13,14 +13,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact_name: Fetal MRI Calculator
-            asset_name: fetal-mri-calculator-linux
+            filename: Fetal MRI Calculator-linux
           - os: windows-latest
-            artifact_name: Fetal MRI Calculator.exe
-            asset_name: Fetal MRI Calculator.exe
+            filename: Fetal MRI Calculator.exe
           - os: macos-latest
-            artifact_name: Fetal MRI Calculator
-            asset_name: Fetal MRI Calculator-macos
+            filename: Fetal MRI Calculator-macos
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -44,11 +41,21 @@ jobs:
           args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', 'Fetal MRI Calculator', *data_args, *console_flag, 'app/main.py']
           subprocess.run(args, check=True)
           PY
+      - name: List dist contents
+        run: ls -lah dist/
+      - name: Rename executable for release
+        run: |
+          cd dist
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            mv "Fetal MRI Calculator.exe" "Fetal MRI Calculator.exe"
+          else
+            mv "Fetal MRI Calculator" "${{ matrix.filename }}"
+          fi
+        shell: bash
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: dist/${{ matrix.artifact_name }}
-          fail_on_unmatched_files: true
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

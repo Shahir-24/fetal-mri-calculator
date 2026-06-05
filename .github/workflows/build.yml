@@ -1,5 +1,8 @@
 name: Build portable executables
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
@@ -75,11 +78,29 @@ jobs:
       - name: List release artifacts
         run: |
           find dist -type f | sort
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
+      - id: create_release
+        uses: actions/create-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          files: dist/**/*
+          release_name: ${{ github.ref_name }}
+          body: "Release ${{ github.ref_name }} artifacts"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release assets
+        shell: bash
+        run: |
+          cd dist
+          release_id="${{ steps.create_release.outputs.id }}"
+          for file in $(find . -type f | sort); do
+            file_path="$file"
+            file_name=$(basename "$file_path")
+            echo "Uploading $file_path as $file_name"
+            curl -S --fail -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @"$file_path" \
+              "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?name=${file_name}"
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

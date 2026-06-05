@@ -69,10 +69,13 @@ jobs:
         with:
           path: dist
       - name: List release artifacts
-        run: ls -lah dist
+        run: |
+          find dist -type f | sort
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: dist/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

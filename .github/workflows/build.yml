@@ -40,7 +40,7 @@ jobs:
           ]
           console_flag = ['--console'] if sys.platform.startswith('win') else []
           name = 'fetal-mri-calculator'
-          args = [sys.executable, '-m', 'PyInstaller', '--onefile', '--name', name, *data_args, *console_flag, 'app/main.py']
+          args = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onefile', '--name', name, *data_args, *console_flag, 'app/main.py']
           subprocess.run(args, check=True)
           PY
       - name: Rename executable for release
@@ -48,9 +48,13 @@ jobs:
         run: |
           cd dist
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            mv "fetal-mri-calculator.exe" "${{ matrix.filename }}"
+            src="fetal-mri-calculator.exe"
           else
-            mv "fetal-mri-calculator" "${{ matrix.filename }}"
+            src="fetal-mri-calculator"
+          fi
+          dest="${{ matrix.filename }}"
+          if [ "$src" != "$dest" ]; then
+            mv "$src" "$dest"
           fi
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

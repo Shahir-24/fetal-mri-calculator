@@ -2,13 +2,33 @@
 
 Local-first fetal brain MRI biometry calculator built with FastAPI and Jinja.
 
+---
+
+## ⚡ **Quick Start: Download & Run (No Installation Required)**
+
+### 1️⃣ Download the app for your platform:
+
+Go to **[Releases](https://github.com/Shahir-24/fetal-mri-calculator/releases)** and download:
+
+- 🍎 **macOS**: `Fetal MRI Calculator-macos` → Double-click to run
+- 🪟 **Windows**: `Fetal MRI Calculator.exe` → Double-click to run  
+- 🐧 **Linux**: `Fetal-MRI-Calculator-linux` → Double-click to run
+
+### 2️⃣ Click once and you're done! 🎉
+
+The app opens automatically in your browser at `http://127.0.0.1:8001`
+
+---
+
+## 📊 Features
+
 This version focuses completely on the fetal MRI workflow:
 - gestational-age-adjusted z-scores and percentiles
 - expected 5th-95th percentile ranges
 - structured report-ready text
 - advisory concern cards with literature-based likelihood ranges where the sources support them
 
-## Run
+## 🔧 Alternative Ways to Run (For Developers)
 
 ### Run from source
 
@@ -33,25 +53,6 @@ python3 -m venv .venv
 ```
 
 The built executable will be placed in `dist/`.
-
-### Download a packaged app from GitHub
-
-This repository can build platform-specific release artifacts on GitHub using `PyInstaller`.
-After a tagged release, GitHub can publish one artifact per platform:
-
-- macOS: `Fetal MRI Calculator`
-- Windows: `Fetal MRI Calculator.exe`
-- Linux: `Fetal MRI Calculator`
-
-On Windows, double-click the `.exe` file.
-On macOS or Linux, run the downloaded file after making it executable:
-
-```bash
-chmod +x "Fetal MRI Calculator"
-./"Fetal MRI Calculator"
-```
-
-The app will open your browser automatically at `http://127.0.0.1:8001`.
 
 ## Tests
 

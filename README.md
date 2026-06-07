@@ -1,6 +1,5 @@
 2# Fetal MRI Calculator
 
-Local-first fetal brain MRI biometry calculator built with FastAPI and Jinja.
 
 ---
 
